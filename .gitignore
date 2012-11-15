@@ -4,3 +4,14 @@
 *.jar
 *.war
 *.ear
+
+# Generated stuff
+build
+dist
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/JdfGrammarConstants.java
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/JdfGrammar.java
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/JdfGrammarTokenManager.java
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/ParseException.java
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/SimpleCharStream.java
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/Token.java
+src/java/it/unipmn/di/dcs/grid/core/format/jdf/TokenMgrError.java
