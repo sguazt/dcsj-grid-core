@@ -1,0 +1,35 @@
+job:
+	label: complex-job
+	requirements: (os == linux) OR (os == win32 AND processorfamily != alpha) OR (os == sunos)
+	init:
+		if (os == linux && processorfamily == x86) then
+			put myfile1-linux-x86 myfile1
+		endif
+		if (os == linux && processorfamily == x86_64) then
+			put myfile1-linux-x86_64 myfile1
+		endif
+		if (os == win32) then
+			put myfile1-win32.exe myfile1
+		endif
+		if (os == sunos) then
+			put myfile1-sunos myfile1
+		endif
+		put myfile2 myfile2
+	remote: ./myfile1 --input myfile2 --output myfile3
+	final:
+		if (os == win32) then
+			get myfile3 myfile-win-$JOB.$TASK
+		else
+			get myfile3 myfile-unix-$JOB.$TASK
+		endif
+
+task:
+task:
+task:
+task:
+task:
+task:
+task:
+task:
+task:
+task:

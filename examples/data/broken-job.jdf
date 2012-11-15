@@ -1,0 +1,10 @@
+##
+## What's wrong?
+## --> This job does not have any 'task' directive
+##
+
+job:
+	label: broken-job
+	init: put myfile myfile
+	remote: myfile > outfile
+	final: get outfile outfile-$JOB.$TASK

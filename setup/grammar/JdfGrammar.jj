@@ -1,0 +1,564 @@
+/*
+ * Copyright (C) 2008  Distributed Computing System (DCS) Group, Computer
+ * Science Department - University of Piemonte Orientale, Alessandria (Italy).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * JavaCC v4 grammar for JDF language.
+ *
+ * JDF is the language for describing jobs in
+ * <a href="http://www.ourgrid.org">OurGrid</a>.
+ *
+ * @author <a href="mailto:marco.guazzone@gmail.com">Marco Guazzone</a>
+ */
+
+/*****************************************
+ * OPTIONS *
+ *****************************************/
+
+options
+{
+	STATIC = false;
+	IGNORE_CASE = true;
+}
+
+/*****************************************
+ * PARSER JAVA CODE *
+ *****************************************/
+
+PARSER_BEGIN(JdfGrammar)
+
+/*
+ * Copyright (C) 2008  Distributed Computing System (DCS) Group, Computer
+ * Science Department - University of Piemonte Orientale, Alessandria (Italy).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package it.unipmn.di.dcs.grid.core.format.jdf;
+
+import it.unipmn.di.dcs.common.text.BinaryTextExpr;
+import it.unipmn.di.dcs.common.text.ITextExpr;
+import it.unipmn.di.dcs.common.text.ITextOp;
+import it.unipmn.di.dcs.common.text.ParenthesizedTextExpr;
+import it.unipmn.di.dcs.common.text.PrefixUnaryTextExpr;
+import it.unipmn.di.dcs.common.text.TerminalTextExpr;
+import it.unipmn.di.dcs.grid.core.middleware.sched.BotJob;
+import it.unipmn.di.dcs.grid.core.middleware.sched.BotTask;
+import it.unipmn.di.dcs.grid.core.middleware.sched.ConditionalStageInRule;
+import it.unipmn.di.dcs.grid.core.middleware.sched.ConditionalStageOutRule;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IBotJob;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IBotTask;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IJobRequirements;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IRemoteCommand;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IStageIn;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IStageInAction;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IStageInRule;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IStageOut;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IStageOutAction;
+import it.unipmn.di.dcs.grid.core.middleware.sched.IStageOutRule;
+import it.unipmn.di.dcs.grid.core.middleware.sched.JobRequirementsOps;
+import it.unipmn.di.dcs.grid.core.middleware.sched.JobRequirements;
+import it.unipmn.di.dcs.grid.core.middleware.sched.RemoteCommand;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageIn;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageInAction;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageInMode;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageInRule;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageInType;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageOut;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageOutAction;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageOutMode;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StageOutRule;
+import it.unipmn.di.dcs.grid.core.middleware.sched.StagingCondition;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Class for parsing a JDF file.
+ *
+ * @author <a href="mailto:marco.guazzone@mfn.unipmn.it">Marco Guazzone</a>
+ */
+public class JdfGrammar
+{
+	public static void main(String[] args) throws ParseException, TokenMgrError
+	{
+		JdfGrammar parser = new JdfGrammar(System.in);
+
+		IBotJob job = null;
+
+		job = parser.Jdf();
+
+		System.out.println( "Parsed Job:" );
+		System.out.println( job.toString() );
+	}
+}
+
+PARSER_END(JdfGrammar)
+
+/*****************************************
+ * TOKENS *
+ *****************************************/
+
+<*>
+SKIP : { " " | "\t" | "\f" }
+<DEFAULT>
+SKIP : { "\n" | "\r" | "\r\n" }
+<DEFAULT>
+SKIP : { < SINGLE_LINE_COMMENT: "#" (~["\n","\r"])* ("\n" | "\r" | "\r\n")? > }
+//TOKEN: { < COLON: ":" > }
+<DEFAULT>
+TOKEN: { < #COLON: ([" ","\t","\f"])* ":" > }
+//TOKEN: { < JOB: "job" ([" ","\t","\f"])* ":" > }
+<DEFAULT>
+TOKEN: { < JOB: "job" <COLON> > }
+<DEFAULT>
+TOKEN: { < LABEL: "label" <COLON> > }
+<DEFAULT>
+TOKEN: { < REQUIREMENTS: "requirements" <COLON> > : EXPR_STATE }
+<DEFAULT>
+TOKEN: { < INIT: "init" <COLON> > }
+<DEFAULT>
+TOKEN: { < REMOTE: "remote" <COLON> > }
+<DEFAULT>
+TOKEN: { < FINAL: "final" <COLON> > }
+<DEFAULT>
+TOKEN: { < PUT: "put" > }
+<DEFAULT>
+TOKEN: { < STORE: "store" > }
+<DEFAULT>
+TOKEN: { < GET: "get" > }
+<DEFAULT>
+TOKEN: { < TASK: "task" <COLON> > }
+<EXPR_STATE>
+TOKEN: { < IN_PATH: "in_path" > }
+<EXPR_STATE>
+TOKEN: { < IN_CLASSPATH: "in_classpath" > }
+<EXPR_STATE>
+TOKEN: { < VERSION: "version" > }
+<EXPR_STATE>
+TOKEN: { < NOT: "not" > }
+<EXPR_STATE>
+TOKEN: { < BANG: "!" > }
+<EXPR_STATE>
+TOKEN: { < AND: "and" > }
+<EXPR_STATE>
+TOKEN: { < AMPAMP: "&&" > }
+<EXPR_STATE>
+TOKEN: { < OR: "or" > }
+<EXPR_STATE>
+TOKEN: { < BARBAR: "||" > }
+<EXPR_STATE>
+TOKEN: { < LPAR: "(" > }
+<EXPR_STATE>
+TOKEN: { < RPAR: ")" > }
+<EXPR_STATE>
+TOKEN: { < EQ: "=" > }
+<EXPR_STATE>
+TOKEN: { < EQEQ: "==" > }
+<EXPR_STATE>
+TOKEN: { < NEQ: "!=" > }
+<EXPR_STATE>
+TOKEN: { < LT: "<" > }
+<EXPR_STATE>
+TOKEN: { < LE: "<=" > }
+<EXPR_STATE>
+TOKEN: { < GT: ">" > }
+<EXPR_STATE>
+TOKEN: { < GE: ">=" > }
+<DEFAULT>
+TOKEN: { < IF: "if" > : EXPR_STATE }
+<EXPR_STATE>
+TOKEN: { < THEN: "then" > : DEFAULT }
+<DEFAULT>
+TOKEN: { < ELSE: "else" > : DEFAULT }
+<DEFAULT>
+TOKEN: { < ENDIF: "endif" > }
+<EXPR_STATE>
+TOKEN: { < NONE: "none" > }
+<EXPR_STATE>
+TOKEN : { < EOL: "\n" | "\r" | "\r\n" > : DEFAULT }
+//TOKEN: { < NUMBER: (["0"-"9"])+ > }
+//TOKEN: { < STRING: ["a"-"z","A"-"Z","0"-"9","_"] (["a"-"z","A"-"Z","0"-"9","_"])* > }
+<DEFAULT,EXPR_STATE>
+//TOKEN: { < STRING: ( ~[":", " ","\n","\r","\t","\f","'","\""] )+ > }
+TOKEN: { < STRING: ( ~[" ","\n","\r","\t","\f","'","\""] )+ > }
+<DEFAULT,EXPR_STATE>
+TOKEN: { < DOUBLE_QUOTED_STRING:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\"" >
+}
+<DEFAULT,EXPR_STATE>
+TOKEN: { < SINGLE_QUOTED_STRING:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "'" >
+}
+/*
+<DEFAULT,EXPR_STATE>
+TOKEN: { < STRING: ( ~[" ","\n","\r","\t","\f","'","\""] )+ > }
+<DEFAULT,EXPR_STATE>
+TOKEN: { < SINGLE_QUOTED_STRING_START: "'" > : SINGLE_QUOTED_STRING_STATE }
+<DEFAULT,EXPR_STATE>
+TOKEN: { < DOUBLE_QUOTED_STRING_START: "\"" > : DOUBLE_QUOTED_STRING_STATE }
+
+<SINGLE_QUOTED_STRING_STATE>
+MORE:
+{
+	< ["\\"] > : SINGLE_QUOTED_STRING_SPECIAL_STATE
+}
+
+<SINGLE_QUOTED_STRING_STATE>
+TOKEN:
+{
+	< SINGLE_QUOTED_STRING_END: "'" > : DEFAULT
+}
+
+<SINGLE_QUOTED_STRING_STATE>
+MORE:
+{
+	< (~[]) >
+}
+
+<SINGLE_QUOTED_STRING_SPECIAL_STATE>
+MORE:
+{
+	< ["'" , "\\" ] > : SINGLE_QUOTED_STRING_STATE
+|	< ~[] > : SINGLE_QUOTED_STRING_STATE
+}
+
+<DOUBLE_QUOTED_STRING_STATE>
+MORE:
+{
+	< ["\\"] > : DOUBLE_QUOTED_STRING_SPECIAL_STATE
+}
+
+<DOUBLE_QUOTED_STRING_STATE>
+TOKEN:
+{
+	< DOUBLE_QUOTED_STRING_END: "\"" > : DEFAULT
+}
+
+<DOUBLE_QUOTED_STRING_STATE>
+MORE:
+{
+	< (~[]) >
+}
+
+<DOUBLE_QUOTED_STRING_SPECIAL_STATE>
+MORE:
+{
+	< ["\"" , "\\" ] > : DOUBLE_QUOTED_STRING_STATE
+|	< ~[] > : DOUBLE_QUOTED_STRING_STATE
+}
+*/
+
+/*****************************************
+ * GRAMMAR PRODUCTIONS *
+ *****************************************/
+
+IBotJob Jdf() :
+{
+	IBotJob job = null;
+	List<IBotTask> tasks = null;
+}
+{
+	job = Job() tasks = TaskList() { job.setTasks(tasks); } <EOF> { return job; }
+}
+
+IBotJob Job() :
+{
+	IBotJob job = new BotJob("none");
+	String label = null;
+	IJobRequirements reqs = null;
+	IStageIn in = null;
+	List<IRemoteCommand> cmds = null;
+	IStageOut out = null;
+}
+{
+	<JOB>
+	[ label = Label() { job.setName(label); } ]
+	[ reqs = Requirements() { job.setRequirements(reqs); } ]
+	[ in = Init() ] { job.setStageIn(in); }
+	[ cmds = Remote() ] { job.setCommands(cmds); }
+	[ out = Final() ] { job.setStageOut(out); }
+	{ return job; }
+}
+
+String Label() :
+{
+	Token t = null;
+	String s = null;
+}
+{
+	<LABEL> ( s = Str() | t = <NONE> ){ return ( s != null ) ? s : t.image; }
+}
+
+IJobRequirements Requirements() :
+{
+	ITextExpr e = null;
+}
+{
+	//<REQUIREMENTS> e = Expr() { return new JobRequirements( e ); }
+	<REQUIREMENTS> e = Expr() <EOL> { return new JobRequirements( e ); }
+}
+
+ITextExpr Expr() :
+{
+	ITextExpr e = null;
+}
+{
+	e = LogicalOrExpr() { return e; }
+}
+
+ITextExpr LogicalOrExpr() :
+{
+	ITextExpr e1 = null;
+	ITextExpr e2 = null;
+}
+{
+	e1 = LogicalAndExpr() (
+		( <BARBAR> | <OR> ) e2 = LogicalAndExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.LOGICAL_OR, e2 ); }
+	)*
+	{ return e1; }
+}
+
+ITextExpr LogicalAndExpr() :
+{
+	ITextExpr e1 = null;
+	ITextExpr e2 = null;
+}
+{
+	e1 = RelationalExpr() (
+		( <AMPAMP> | <AND> ) e2 = RelationalExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.LOGICAL_AND, e2 ); }
+	)*
+	{ return e1; }
+}
+
+ITextExpr RelationalExpr() :
+{
+	ITextExpr e1 = null;
+	ITextExpr e2 = null;
+}
+{
+	e1 = UnaryExpr() (
+		<EQ>   e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.EQ, e2 ); }
+		| <EQEQ> e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.EQ, e2 ); }
+		| <GE>   e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.GE, e2 ); }
+		| <GT>   e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.GT, e2 ); }
+		| <LE>   e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.LE, e2 ); }
+		| <LT>   e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.LT, e2 ); }
+		| <NEQ>  e2 = UnaryExpr() { e1 = new BinaryTextExpr( e1, JobRequirementsOps.NE, e2 ); }
+	)*
+	{ return e1; }
+}
+
+ITextExpr UnaryExpr() :
+{
+	ITextExpr e = null;
+}
+{
+	( <BANG> | <NOT> ) e = PrimaryExpr() { return new PrefixUnaryTextExpr( JobRequirementsOps.LOGICAL_NOT, e ); }
+|	e = PrimaryExpr() { return e; }
+}
+ITextExpr PrimaryExpr() :
+{
+	ITextExpr e = null;
+}
+{
+	e = Literal() { return e; }
+|	<LPAR> e = Expr() <RPAR> { return new ParenthesizedTextExpr(e); }
+|	<IN_PATH> e = Literal() { return null; } //TODO
+|	<IN_CLASSPATH> e = Literal() { return null; } //TODO
+|	<VERSION> e = Literal() e = Literal() { return null; } //TODO
+}
+
+ITextExpr Literal() :
+{
+	String s = null;
+}
+{
+	s = Str() { return new TerminalTextExpr(s); }
+}
+
+IStageIn Init() :
+{
+	IStageIn stageIn = new StageIn();
+	IStageInRule rule = null;
+}
+{
+	<INIT> ( ( rule = InitBlock() { stageIn.addRule( rule ); } )+ | <NONE> )? { return stageIn; }
+}
+
+IStageInRule InitBlock() :
+{
+	ITextExpr cond = null;
+	StageInRule trueRule = new StageInRule();
+	//StageInRule falseRule = new StageInRule();
+	StageInRule falseRule = null;
+	IStageInAction action = null;
+}
+{
+	<IF> cond = Expr() <THEN>
+	( action = InitAction() { trueRule.addAction(action); } )+
+	[ <ELSE> { falseRule = new StageInRule(); } ( action = InitAction() { falseRule.addAction(action); } )+ ] <ENDIF>
+	{ return new ConditionalStageInRule( new StagingCondition(cond), trueRule, falseRule); }
+|	action = InitAction() { return new StageInRule(action); }
+}
+
+IStageInAction InitAction() :
+{
+	StageInMode mode;
+	String local = null;
+	String remote = null;
+}
+{
+	mode = InitMethod() local = Str() remote = Str()
+	{
+		return new StageInAction(
+			mode,
+			local,
+			remote,
+			remote.matches("^\\$STORAGE.*") ? StageInType.PERSISTENT : StageInType.VOLATILE
+		);
+	}
+}
+
+StageInMode InitMethod() :
+{
+}
+{
+	<PUT> { return StageInMode.ALWAYS_OVERWRITE; }
+|	<STORE> { return StageInMode.DIFF_OVERWRITE; }
+}
+
+List<IRemoteCommand> Remote() :
+{
+	List<IRemoteCommand> cmds = new ArrayList<IRemoteCommand>();
+	String s = null;
+	StringBuilder sb = new StringBuilder();
+}
+{
+	//<REMOTE> ( s = Str() { cmds.add( new RemoteCommand(s) ); } )+ { return cmds; }
+	<REMOTE> (
+		s = Str() {
+			if ( sb.length() != 0 )
+			{
+				sb.append( " " );
+			}
+			sb.append( s );
+		}
+	)+ {  cmds.add( new RemoteCommand(sb.toString()) ); return cmds; }
+}
+
+IStageOut Final() :
+{
+	IStageOut stageOut = new StageOut();
+	IStageOutRule rule = null;
+}
+{
+	<FINAL> ( ( rule = FinalBlock() { stageOut.addRule( rule ); } )+ | <NONE> )? { return stageOut; }
+}
+
+IStageOutRule FinalBlock() :
+{
+	ITextExpr cond = null;
+	StageOutRule trueRule = new StageOutRule();
+	//StageOutRule falseRule = new StageOutRule();
+	StageOutRule falseRule = null;
+	IStageOutAction action = null;
+}
+{
+	<IF> cond = Expr() <THEN>
+	( action = FinalAction() { trueRule.addAction(action); } )+
+	[ <ELSE> { falseRule = new StageOutRule(); }( action = FinalAction() { falseRule.addAction(action); } )+ ] <ENDIF>
+	{ return new ConditionalStageOutRule( new StagingCondition(cond), trueRule, falseRule); }
+|	action = FinalAction() { return new StageOutRule(action); }
+}
+
+IStageOutAction FinalAction() :
+{
+	StageOutMode mode;
+	String remote = null;
+	String local = null;
+}
+{
+	mode = FinalMethod() remote = Str() local = Str() { return new StageOutAction( mode, remote, local ); }
+}
+
+StageOutMode FinalMethod() :
+{
+}
+{
+	<GET> { return StageOutMode.ALWAYS_OVERWRITE; }
+}
+
+List<IBotTask> TaskList() :
+{
+	List<IBotTask> tasks = new ArrayList<IBotTask>();
+	IStageIn in = null;
+	List<IRemoteCommand> cmds = null;
+	IStageOut out = null;
+}
+{
+	(
+		<TASK> { in = null; cmds = null; out = null; }
+		[ in = Init() ]
+		[ cmds = Remote() ]
+		[ out = Final() ]
+		{ tasks.add( new BotTask( in, cmds, out ) ); }
+	)+
+	{ return tasks; }
+}
+
+String Str() :
+{
+	Token t1 = null;
+	Token t2 = null;
+}
+{
+	t1 = <STRING> { return t1.image; }
+|	t1 = <SINGLE_QUOTED_STRING> { return t1.image; }
+|	t1 = <DOUBLE_QUOTED_STRING> { return t1.image; }
+//|	t1 = <SINGLE_QUOTED_STRING_START> t2 = <SINGLE_QUOTED_STRING_END> { return t1.image + t2.image; }
+//|	t1 = <DOUBLE_QUOTED_STRING_START> t2 = <DOUBLE_QUOTED_STRING_END> { return t1.image + t2.image; }
+}
