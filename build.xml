@@ -96,7 +96,7 @@
 				<attribute name="Class-Path" value="${classpath.jar}"/>
 -->
 				<attribute name="Built-By" value="${user.name}"/>
-				<section name="it.unipmn.di.dcs.common">
+				<section name="it.unipmn.di.dcs.grid.core">
 					<attribute name="Specification-Title" value="${app.name}"/>
 					<attribute name="Specification-Version" value="${app.version}"/>
 					<attribute name="Specification-Vendor" value="Distributed Computing System (DCS) Group"/>
